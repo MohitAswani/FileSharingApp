@@ -1,16 +1,16 @@
-const path = require('path');
-
 const express = require('express');
+
+const isAuth = require('../middleware/is-auth');
 
 const homeController = require('../controllers/home');
 
 const router = express.Router();
 
-router.get('/',homeController.getHome);
+router.get('/',isAuth,homeController.getHome);
 
-router.get('/home',homeController.getHome);
+router.get('/home',isAuth,homeController.getHome);
 
-router.post('/uploads',homeController.postUpload);
+router.post('/uploads',isAuth,homeController.postUpload);
 
 router.get('/file/:filename',homeController.getFile);
 
