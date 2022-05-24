@@ -10,6 +10,8 @@ router.get('/',isAuth,homeController.getHome);
 
 router.get('/home',isAuth,homeController.getHome);
 
+router.get('/uploads',isAuth,homeController.getUsersUploads);
+
 router.post('/uploads',isAuth,homeController.postUpload);
 
 router.get('/file/:filename',homeController.getFile);

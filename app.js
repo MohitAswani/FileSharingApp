@@ -69,6 +69,7 @@ app.set('view engine', 'ejs');
 app.set('views', 'views');
 
 app.use(express.static(path.join(__dirname, 'public')));
+app.use('/data/files',express.static(path.join(__dirname, 'data/files')));  
 
 app.use((req, res, next) => {
     if (!req.session.user) {

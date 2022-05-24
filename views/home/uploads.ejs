@@ -1,0 +1,30 @@
+<%- include('../includes/head.ejs') %>
+    <link rel="stylesheet" href="../css/uploads.css">
+    </head>
+
+    <body>
+
+        <%- include('../includes/nav.ejs') %>
+
+            <main>
+                <div class="card-container">
+                    <% uploads.forEach(upload=>{ %>
+                        <div class="card">
+                            <% if(upload.fileid.file.mimetype==='image/png'||upload.fileid.file.mimetype==='image/jpg'||upload.fileid.file.mimetype==='image/jpeg') {%> 
+                                <img class="card-img-top"
+                                     src="../data/files/<%=upload.fileid.file.filename%> "
+                                     alt="Card image cap">
+                            <% } %> 
+                            <div class="card-body">
+                                <h5 class="card-title"><%= upload.fileid.file.originalname %></h5>
+                                <div class="card-action-btns">
+                                    <a href="#" class="btn btn-primary">Copy link</a>
+                                    <a href="#" class="btn btn-primary">Dowload</a>
+                                </div>
+                            </div>
+                        </div>
+                    <% }) %> 
+                </div>
+            </main>
+
+            <%- include('../includes/end.ejs') %>

@@ -66,4 +66,6 @@ router.get('/confirmEmail/:confirmEmailToken',authController.confirmEmail);
 
 router.get('/successConfirmEmail',authController.getSuccessConfirmEmail);
 
+router.get('/logout',isAuth,authController.getLogOut);
+
 module.exports = router;

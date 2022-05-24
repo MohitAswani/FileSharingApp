@@ -67,8 +67,7 @@ exports.postLogin = (req, res, next) => {
                 .compare(password, user.password)
                 .then(result => {
                     if (result) {
-
-                        if(user.confirmEmailToken){
+                        if (user.confirmEmailToken) {
                             res.redirect('/confirmEmail');
                             return transporter.sendMail({
                                 to: email,
@@ -83,9 +82,7 @@ exports.postLogin = (req, res, next) => {
                         req.session.user = user;
                         return req.session.save(err => {
                             if (err) {
-                                const error = new Error(err);
-                                error.httpStatusCode = 500;
-                                return next(error);
+                                return next(createServerError(err));
                             }
                             return res.redirect('/');
                         })
@@ -102,15 +99,11 @@ exports.postLogin = (req, res, next) => {
                     });
                 })
                 .catch(err => {
-                    const error = new Error(err);
-                    error.httpStatusCode = 500;
-                    return next(error);
+                    return next(createServerError(err));
                 });
         })
         .catch(err => {
-            const error = new Error(err);
-            error.httpStatusCode = 500;
-            return next(error);
+            return next(createServerError(err));
         });
 }
 
@@ -178,9 +171,7 @@ exports.postSignUp = (req, res, next) => {
                 });
             })
             .catch(err => {
-                const error = new Error(err);
-                error.httpStatusCode = 500;
-                return next(err);
+                return next(createServerError(err));
             })
     })
 
@@ -209,15 +200,11 @@ exports.confirmEmail = (req, res, next) => {
                     return res.redirect('/successConfirmEmail');
                 })
                 .catch(err => {
-                    const error = new Error(err);
-                    error.httpStatusCode = 500;
-                    return next(err);
+                    return next(createServerError(err));
                 })
         })
         .catch(err => {
-            const error = new Error(err);
-            error.httpStatusCode = 500;
-            return next(err);
+            return next(createServerError(err));
         })
 }
 
@@ -231,4 +218,21 @@ exports.getSuccessConfirmEmail = (req, res, next) => {
     res.render('auth/success_confirm_email', {
         pageTitle: 'Successfully confirmed email'
     });
+}
+
+exports.getLogOut = (req, res, next) => {
+
+    req.session.destroy((err) => {
+        if (err) {
+            return next(createServerError(err));
+        }
+
+        res.redirect('/login');
+    })
+}
+
+const createServerError = (err) => {
+    const error = new Error(err);
+    error.httpStatusCode = 500;
+    return error;
 }

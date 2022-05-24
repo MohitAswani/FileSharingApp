@@ -1,5 +1,7 @@
 const mongoose = require('mongoose');
 
+const upload= require('./upload');
+
 const Schema = mongoose.Schema;
 
 const userSchema = new Schema({
@@ -21,7 +23,12 @@ const userSchema = new Schema({
     },
     resetToken: String,
     resetTokenExpiration: Date,
-    confirmEmailToken: String
+    confirmEmailToken: String,
+    uploads:[{
+        fileid:{
+        type:Schema.Types.ObjectId,
+        ref:upload
+    }}]
 });
 
 module.exports = mongoose.model('User', userSchema)
