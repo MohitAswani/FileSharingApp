@@ -167,7 +167,7 @@ exports.postSignUp = (req, res, next) => {
                     from: 'test69420@outlook.in',
                     subject: 'Confirm email',
                     html: `<h2>Confirm email</h2>
-                <p>Click on <a href='http://localhost:3000/confirmEmail/${token}'>this</a> to confirm your email.</p>`
+                <p>Click on <a href='${process.env.DOMAIN}/confirmEmail/${token}'>this</a> to confirm your email.</p>`
                 });
             })
             .catch(err => {
