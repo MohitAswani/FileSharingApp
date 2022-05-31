@@ -26,20 +26,27 @@ exports.postUpload = (req, res, next) => {
         })
     }
 
+    const fileObj={
+        originalname:file.originalname,
+        mimetype:file.mimetype,
+        size:file.size,
+        key:file.key
+    };
+
     const newUpload = new Upload({
         userId: req.user._id,
-        file: file
+        file: fileObj
     });
 
     newUpload.save()
         .then(result => {
             req.user.uploads.push({
-                fileid:result._id
+                fileid: result._id
             });
             return req.user.save();
         })
         .then(result => {
-            return res.redirect(`/file/${file.filename}`);
+            return res.redirect('/uploads');
         })
         .catch(err => {
             return next(createServerError(err));
@@ -47,37 +54,23 @@ exports.postUpload = (req, res, next) => {
 
 }
 
-exports.getUsersUploads=(req,res,next)=>{
+exports.getUsersUploads = (req, res, next) => {
 
     req.user
         .populate('uploads.fileid')
-        .then(user=>{
-            console.log(user.uploads[0].fileid.file);
+        .then(user => {
             res.render('home/uploads.ejs', {
                 pageTitle: 'Uploads',
                 path: '/uploads',
                 hasError: false,
                 errorMessage: '',
-                uploads:user.uploads
+                uploads: user.uploads,
+                domain: process.env.DOMAIN
             });
         })
-        .catch(err=>{
+        .catch(err => {
             return next(createServerError(err));
         })
-}
-
-exports.getFile = (req, res, next) => {
-    const filename = req.params.filename;
-
-    const filePath = path.join('data', 'files', filename);
-
-    const file = fs.createReadStream(filePath).on('error', (err) => {
-        return res.redirect('/404');
-    });
-
-    res.setHeader('Content-Disposition', 'attachment; filename="' + filename + '"');
-
-    file.pipe(res);
 }
 
 const createServerError = (err) => {

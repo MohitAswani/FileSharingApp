@@ -33,10 +33,11 @@
         </div>
       </div>
       <h1 class="second-four">4</h1>
-      <p class="wrong-para">Uh Oh! Page not found!</p>
       <% if(msg&&msg.length>0) { %>
-        <p class="wrong-para">msg</p>
-      <% } %>  
+        <p class="wrong-para"><%= msg %> </p>
+      <% } else { %>
+        <p class="wrong-para">Uh Oh! Page not found!</p>
+      <% } %>   
     </div>
 
     <script src="../js/404.js"></script>

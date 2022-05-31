@@ -10,7 +10,11 @@ const MongoDBStore = require('connect-mongodb-session')(session);
 const csurf = require('csurf');
 const multer = require('multer');
 
-const User= require('./models/user');
+const { fileStorage, getFileStream } = require('./util/s3');
+
+
+const User = require('./models/user');
+const Upload = require('./models/upload');
 
 const authRoutes = require('./routes/auth');
 const homeRoutes = require('./routes/home');
@@ -21,24 +25,8 @@ const app = express();
 
 const store = new MongoDBStore({
     uri: process.env.MONGODB_URI,
-    collection:'sessions',
+    collection: 'sessions',
     expires: new Date(Date.now() + 24 * 60 * 60 * 1000)
-});
-
-const fileStorage = multer.diskStorage({
-    destination: (req, file, cb) => {
-        cb(null, 'data/files');
-    },
-    filename: (req, file, cb) => {
-        crypto.randomBytes(16, (err, buf) => {
-            if (err) {
-                console.log(err);
-            }
-            else {
-                cb(null, buf.toString('hex') + '-' + file.originalname);
-            }
-        })
-    }
 });
 
 const fileFilter = (req, file, cb) => {
@@ -54,14 +42,14 @@ app.use(cookieParser());
 
 app.use(session({
     secret: process.env.SESSION_SECRET_KEY,
-    resave:false,
-    saveUninitialized:false,
-    cookie:{
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
         expires: new Date(Date.now() + 24 * 60 * 60 * 1000),
         httponly: true,
         store: store
     },
-    store:store
+    store: store
 }));
 
 app.set('view engine', 'ejs');
@@ -69,7 +57,31 @@ app.set('view engine', 'ejs');
 app.set('views', 'views');
 
 app.use(express.static(path.join(__dirname, 'public')));
-app.use('/data/files',express.static(path.join(__dirname, 'data/files')));  
+
+app.get('/file/:filename', (req, res, next) => {
+    const key = req.params.filename;
+
+    Upload.findOne({ 'file.key': key })
+        .then(upload => {
+
+            if (!upload) {
+                return res.status(404).render('errors/404', {
+                    pageTitle: 'File not found',
+                    path: {},
+                    msg: 'File not found'
+                });
+            }
+
+            const fileref = getFileStream(upload.file.key);
+            res.setHeader('Content-Disposition', 'attachment; filename="' + upload.file.originalname + '"');
+            fileref.pipe(res);
+        })
+        .catch(err => {
+            const error = new Error(err);
+            error.httpStatusCode = 500;
+            return error;
+        })
+});
 
 app.use((req, res, next) => {
     if (!req.session.user) {
@@ -101,14 +113,14 @@ app.use((error, req, res, next) => {
         return res.status(404).render('errors/404', {
             pageTitle: 'Page not found',
             path: {},
-            msg:error.msg
+            msg: error.msg
         });
     }
     if (error.httpStatusCode === 500) {
         res.status(500).render('errors/500', {
             pageTitle: 'Server errror',
             path: '/500',
-            msg:error.msg
+            msg: error.msg
         });
     }
 
@@ -116,16 +128,16 @@ app.use((error, req, res, next) => {
         res.status(500).render('errors/500', {
             pageTitle: 'Server errror',
             path: '/500',
-            msg:error.msg
+            msg: error.msg
         });
     }
 })
 
 mongoose.connect(process.env.MONGODB_URI)
-    .then(result=>{
+    .then(result => {
         console.log('Connection successful');
         app.listen(3000 || process.env.PORT);
     })
-    .catch(err=>{
+    .catch(err => {
         console.log(err);
     });

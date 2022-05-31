@@ -23,3 +23,22 @@
 .card-action-btns a{
     margin: 1rem 0.5rem;
 }
+
+button.card-action-btns{
+    margin: 1rem 0.5rem;
+}
+
+.card-title{
+    width: fit-content;
+    max-width: 90%;
+}
+
+@media screen and (max-width: 600px){
+    .card{
+        width: 90%;
+    }
+    .card img{
+        width: 100%;
+        height: auto;
+    }
+}

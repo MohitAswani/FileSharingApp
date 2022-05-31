@@ -12,19 +12,19 @@
                         <div class="card">
                             <% if(upload.fileid.file.mimetype==='image/png'||upload.fileid.file.mimetype==='image/jpg'||upload.fileid.file.mimetype==='image/jpeg') {%> 
                                 <img class="card-img-top"
-                                     src="../data/files/<%=upload.fileid.file.filename%> "
+                                     src="file/<%=upload.fileid.file.key%>"
                                      alt="Card image cap">
                             <% } %> 
                             <div class="card-body">
                                 <h5 class="card-title"><%= upload.fileid.file.originalname %></h5>
                                 <div class="card-action-btns">
-                                    <a href="#" class="btn btn-primary">Copy link</a>
-                                    <a href="#" class="btn btn-primary">Dowload</a>
+                                    <a onclick="copyFunc(this)" class="btn btn-primary">Copy link</a>
+                                    <a href="file/<%=upload.fileid.file.key%>" class="btn btn-primary" id="download_link">Download</a>
                                 </div>
                             </div>
                         </div>
                     <% }) %> 
                 </div>
             </main>
-
+            <script src="../js/upload.js"></script>
             <%- include('../includes/end.ejs') %>
