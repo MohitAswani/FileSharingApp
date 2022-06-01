@@ -74,7 +74,7 @@ exports.postLogin = (req, res, next) => {
                                 from: 'test69420@outlook.in',
                                 subject: 'Confirm email',
                                 html: `<h2>Confirm email</h2>
-                            <p>Click on <a href='http://localhost:3000/confirmEmail/${user.confirmEmailToken}'>this</a> to confirm your email.</p>`
+                            <p>Click on <a href='${process.env.DOMAIN}/confirmEmail/${user.confirmEmailToken}'>this</a> to confirm your email.</p>`
                             });
                         }
 
