@@ -14,7 +14,9 @@
                                 <img class="card-img-top"
                                      src="file/<%=upload.fileid.file.key%>"
                                      alt="Card image cap">
-                            <% } %> 
+                            <% } else { %>
+                                <h1 class="card-file-type">.<%= upload.fileid.file.mimetype.split('/')[1] %></h1>
+                            <% } %>  
                             <div class="card-body">
                                 <h5 class="card-title"><%= upload.fileid.file.originalname %></h5>
                                 <div class="card-action-btns">

@@ -20,8 +20,6 @@ const homeRoutes = require('./routes/home');
 
 const errorController = require('./controllers/error');
 
-const PORT = process.env.PORT || 3000;
-
 const app = express();
 
 const store = new MongoDBStore({
@@ -136,8 +134,9 @@ app.use((error, req, res, next) => {
 
 mongoose.connect(process.env.MONGODB_URI)
     .then(result => {
-        console.log('Connection successful and listening on port : '+PORT);
-        app.listen(PORT);
+        app.listen(process.env.PORT,()=>{
+            console.log('Connection successful and listening on PORT '+process.env.PORT);
+        });
     })
     .catch(err => {
         console.log(err);

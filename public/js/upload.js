@@ -6,6 +6,6 @@ const copyFunc=(btn)=>{
     btn.textContent='Copied';
 
     setTimeout(()=>{
-        btn.textContent='Copy';
+        btn.textContent='Copy link';
     },2000);
 };
