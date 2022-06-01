@@ -12,7 +12,6 @@ const multer = require('multer');
 
 const { fileStorage, getFileStream } = require('./util/s3');
 
-
 const User = require('./models/user');
 const Upload = require('./models/upload');
 
@@ -20,6 +19,8 @@ const authRoutes = require('./routes/auth');
 const homeRoutes = require('./routes/home');
 
 const errorController = require('./controllers/error');
+
+const PORT = process.env.PORT || 3000;
 
 const app = express();
 
@@ -135,8 +136,8 @@ app.use((error, req, res, next) => {
 
 mongoose.connect(process.env.MONGODB_URI)
     .then(result => {
-        console.log('Connection successful');
-        app.listen(process.env.PORT);
+        console.log('Connection successful and listening on port : '+PORT);
+        app.listen(PORT);
     })
     .catch(err => {
         console.log(err);
