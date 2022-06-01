@@ -1,11 +1,11 @@
-const copyFunc=(btn)=>{
-    let link=btn.parentNode.querySelector('#download_link').href;
-    
+const copyFunc = (btn) => {
+    let link = btn.parentNode.querySelector('#download_link').href;
+
     navigator.clipboard.writeText(link);
 
-    btn.textContent='Copied';
+    btn.textContent = 'Copied';
 
-    setTimeout(()=>{
-        btn.textContent='Copy link';
-    },2000);
+    setTimeout(() => {
+        btn.textContent = 'Copy link';
+    }, 2000);
 };

@@ -1,0 +1,86 @@
+<%- include('../includes/head.ejs') %>
+    <link rel="stylesheet" href="../css/uploads.css">
+    </head>
+
+    <body>
+
+        <%- include('../includes/nav.ejs') %>
+
+            <main>
+
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h2 class="modal-title" id="exampleModalLabel">Change
+                            visibility
+                        </h2>
+                    </div>
+                    <form class="modal-body" disabled>
+                        <input type="hidden" id="upload-key" value="<%=upload.file.key%>">
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="visibilityRadios" id="publicRadio"
+                                value="public" <%=(upload.visibility==='public' )?'checked':''%>>
+                            <label class="form-check-label" for="publicRadio">
+                                Public
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="visibilityRadios" id="privateRadio"
+                                value="private" <%=(upload.visibility==='private' )?'checked':''%>>
+                            <label class="form-check-label" for="privateRadio">
+                                Private
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="visibilityRadios" id="restrictedRadio"
+                                value="restricted" <%=(upload.visibility==='restricted' )?'checked':''%>>
+                            <label class="form-check-label" for="restrictedRadio">
+                                Restricted
+                            </label>
+                            <ul class="list-group" <% if(upload.visibility!=='restricted' ) { %>
+                                style="display:none;"<% } else { %>
+                                    style="display:flex;" <% } %>>
+                                        <li class="list-group-item">You
+                                            <small>(default)</small>
+                                        </li>
+                                        <% upload.visibleTo.forEach((user,index)=>{
+                                            %>
+                                            <li class="list-group-item"
+                                                style="display:flex;justify-content: space-between;">
+                                                <p style="margin: 0;">
+                                                    <%=user.email%>
+                                                </p><button
+                                                    id="<%=index%>"
+                                                    type=""
+                                                    style="background: none;border:0px"
+                                                    onclick="removeUser(this);return false;"
+                                                    ><img
+                                                        style="width: 18px;"
+                                                        src="../images/cancel-svg.svg" alt=""></button>
+                                            </li>
+                                            <%})%>
+                            </ul>
+                            <div class="input-group mb-0" <% if(upload.visibility!=='restricted' ) { %>
+                                style="display:none;"<% } else { %>
+                                    style="display:flex;" <% } %>>
+                                        <input type="email" class="form-control" placeholder="User's email"
+                                            aria-label="User's email" aria-describedby="basic-addon2" name="users-email">
+                                        <div class="input-group-append">
+                                            <button class="btn btn-primary" type="button" onclick="addUser(this)">Add
+                                                user</button>
+                                        </div>
+                            </div>
+                        </div>
+                    </form>
+
+                    <p id="warning-text" style="display: flex;
+                            justify-content:center;
+                            color:red"></p>
+                    <div class="modal-footer">
+                        <a class="btn btn-primary" href="/uploads">Go back</a>
+                    </div>
+                </div>
+
+            </main>
+
+<script src="../js/visibility.js"></script>
+<%- include('../includes/end.ejs') %>

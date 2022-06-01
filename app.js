@@ -57,31 +57,6 @@ app.set('views', 'views');
 
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.get('/file/:filename', (req, res, next) => {
-    const key = req.params.filename;
-
-    Upload.findOne({ 'file.key': key })
-        .then(upload => {
-
-            if (!upload) {
-                return res.status(404).render('errors/404', {
-                    pageTitle: 'File not found',
-                    path: {},
-                    msg: 'File not found'
-                });
-            }
-
-            const fileref = getFileStream(upload.file.key);
-            res.setHeader('Content-Disposition', 'attachment; filename="' + upload.file.originalname + '"');
-            fileref.pipe(res);
-        })
-        .catch(err => {
-            const error = new Error(err);
-            error.httpStatusCode = 500;
-            return error;
-        })
-});
-
 app.use((req, res, next) => {
     if (!req.session.user) {
         return next();
@@ -101,6 +76,51 @@ app.use((req, res, next) => {
 
 });
 
+app.get('/file/:filename', (req, res, next) => {
+    const key = req.params.filename;
+
+    Upload.findOne({ 'file.key': key })
+        .then(upload => {
+
+            if (!upload) {
+                return res.status(404).render('errors/404', {
+                    pageTitle: 'File not found',
+                    path: {},
+                    msg: 'File not found'
+                });
+            }
+
+            if (req.user) {
+                if (req.user._id.toString() !== upload.userId.toString() && upload.visibility === 'private') {
+                    const error = new Error('Access denied');
+                    error.httpStatusCode = 403;
+                    return next(error);
+                }
+                if (req.user._id.toString() !== upload.userId.toString() && upload.visibility === 'restricted' && upload.visibleTo.findIndex(p => { return p.email === req.user.email})===-1){
+                    const error = new Error('Access denied');
+                    error.httpStatusCode = 403;
+                    return next(error);
+                }
+            }
+            else {
+                if (upload.visibility !== 'public') {
+                    const error = new Error('Access denied');
+                    error.httpStatusCode = 403;
+                    return next(error);
+                }
+            }
+
+            const fileref = getFileStream(upload.file.key);
+            res.setHeader('Content-Disposition', 'attachment; filename="' + upload.file.originalname + '"');
+            fileref.pipe(res);
+        })
+        .catch(err => {
+            const error = new Error(err);
+            error.httpStatusCode = 500;
+            return next(error);
+        })
+});
+
 app.use(authRoutes);
 app.use(homeRoutes);
 
@@ -108,6 +128,11 @@ app.get('/404', errorController.get404);
 
 app.use((error, req, res, next) => {
     console.log(error);
+    if (error.httpStatusCode === 403) {
+        return res.status(403).render('errors/403',{
+            pageTitle:'Access denied'
+        });
+    }
     if (error.httpStatusCode === 404) {
         return res.status(404).render('errors/404', {
             pageTitle: 'Page not found',
@@ -134,8 +159,8 @@ app.use((error, req, res, next) => {
 
 mongoose.connect(process.env.MONGODB_URI)
     .then(result => {
-        app.listen(process.env.PORT,()=>{
-            console.log('Connection successful and listening on PORT '+process.env.PORT);
+        app.listen(process.env.PORT, () => {
+            console.log('Connection successful and listening on PORT ' + process.env.PORT);
         });
     })
     .catch(err => {
