@@ -8,7 +8,8 @@ exports.getHome = (req, res, next) => {
         pageTitle: 'Home',
         path: '/home',
         hasError: false,
-        errorMessage: ''
+        errorMessage: '',
+        email:req.user.email
     });
 }
 
@@ -66,7 +67,8 @@ exports.getUsersUploads = (req, res, next) => {
                 hasError: false,
                 errorMessage: '',
                 uploads: user.uploads,
-                domain: process.env.DOMAIN
+                domain: process.env.DOMAIN,
+                email:req.user.email
             });
         })
         .catch(err => {
@@ -84,7 +86,8 @@ exports.getVisibility = (req, res, next) => {
                 path: '',
                 hasError: false,
                 errorMessage: '',
-                upload:upload
+                upload:upload,
+                email:req.user.email
             });
         })
         .catch(err => {
